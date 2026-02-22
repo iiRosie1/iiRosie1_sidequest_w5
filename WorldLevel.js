@@ -2,27 +2,15 @@ class WorldLevel {
   constructor(json) {
     this.schemaVersion = json.schemaVersion ?? 1;
 
+    // --- World size ---
     this.w = json.world?.w ?? 2400;
     this.h = json.world?.h ?? 1600;
-    this.bg = json.world?.bg ?? [235, 235, 235];
-    this.gridStep = json.world?.gridStep ?? 160;
+    this.bg = json.world?.bg ?? [10, 10, 30];
 
-    this.obstacles = json.obstacles ?? [];
+    // --- Camera tuning ---
+    this.camLerp = json.camera?.lerp ?? 0.05;
 
-    // NEW: camera tuning knob from JSON (data-driven)
-    this.camLerp = json.camera?.lerp ?? 0.12;
-
-    this.mistDots = [];
-
-    for (let i = 0; i < 120; i++) {
-      this.mistDots.push({
-        x: random(this.w),
-        y: random(this.h),
-        size: random(2, 6),
-        speed: random(0.1, 0.4)
-      });
-    }
-
+    // --- Hidden glowing symbols (dream memories) ---
     this.symbols = [];
 
     for (let i = 0; i < 12; i++) {
@@ -32,51 +20,82 @@ class WorldLevel {
         discovered: false
       });
     }
+
+    // --- Far star layer (tiny, distant stars) ---
+    this.starsFar = [];
+
+    for (let i = 0; i < 200; i++) {
+      this.starsFar.push({
+        x: random(this.w),
+        y: random(this.h),
+        size: random(1, 2)
+      });
+    }
+
+    // --- Near star layer (brighter stars) ---
+    this.starsNear = [];
+
+    for (let i = 0; i < 100; i++) {
+      this.starsNear.push({
+        x: random(this.w),
+        y: random(this.h),
+        size: random(2, 4)
+      });
+    }
   }
 
   drawBackground() {
-    background(220);
+    // Deep space gradient
+    for (let y = 0; y < height; y++) {
+      let inter = map(y, 0, height, 0, 1);
+      let c = lerpColor(
+        color(10, 10, 30),
+        color(30, 0, 60),
+        inter
+      );
+      stroke(c);
+      line(0, y, width, y);
+    }
   }
 
   drawWorld() {
+
+    // --- FAR STAR FIELD (slow parallax) ---
     noStroke();
-    fill(this.bg[0], this.bg[1], this.bg[2]);
-    rect(0, 0, this.w, this.h);
-  
-    // Soft grid (fainter than before)
-    stroke(240);
-    for (let x = 0; x <= this.w; x += this.gridStep)
-      line(x, 0, x, this.h);
-    for (let y = 0; y <= this.h; y += this.gridStep)
-      line(0, y, this.w, y);
-  
-    // Floating mist particles
-    noStroke();
-    fill(255, 255, 255, 40);
-  
-    for (let dot of this.mistDots) {
-      dot.y += dot.speed;
-  
-      if (dot.y > this.h) {
-        dot.y = 0;
-        dot.x = random(this.w);
-      }
-  
-      ellipse(dot.x, dot.y, dot.size);
+    fill(255, 255, 255, 120);
+    for (let s of this.starsFar) {
+      ellipse(s.x, s.y, s.size);
     }
   
-    // Obstacles (make softer)
-    fill(180, 200, 220, 160);
-    for (const o of this.obstacles)
-      rect(o.x, o.y, o.w, o.h, o.r ?? 0);
+    // --- NEAR STAR FIELD (brighter) ---
+    fill(255, 255, 255, 200);
+    for (let s of this.starsNear) {
+      ellipse(s.x, s.y, s.size);
+    }
   
-    // Hidden symbols
+    // --- Nebula clouds ---
+    for (let i = 0; i < 6; i++) {
+      let nx = noise(i * 100);
+      let ny = noise(i * 200);
+  
+      fill(120, 80, 200, 30);
+      ellipse(
+        nx * this.w,
+        ny * this.h,
+        500,
+        400
+      );
+    }
+  
+    // --- Dream symbols (glowing stars) ---
     for (let s of this.symbols) {
       if (!s.discovered) {
-        fill(255, 220, 120, 180);
-        ellipse(s.x, s.y, 8);
+        let pulse = 60 + sin(frameCount * 0.05) * 40;
   
-        fill(255, 220, 120, 60 + sin(frameCount * 0.05) * 40);
+        fill(180, 220, 255, 200);
+        ellipse(s.x, s.y, 6);
+  
+        fill(180, 220, 255, pulse);
         ellipse(s.x, s.y, 20);
       }
     }

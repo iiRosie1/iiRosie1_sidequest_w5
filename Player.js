@@ -20,8 +20,13 @@ class Player {
   }
 
   draw() {
-    fill(50, 110, 255);
+    let pulse = 150 + sin(frameCount * 0.08) * 80;
+  
     noStroke();
-    rect(this.x - 12, this.y - 12, 24, 24, 5);
+    fill(200, 240, 255, pulse);
+    ellipse(this.x, this.y, 20);
+  
+    fill(200, 240, 255, 60);
+    ellipse(this.x, this.y, 40);
   }
 }

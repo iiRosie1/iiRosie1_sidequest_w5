@@ -65,6 +65,9 @@ function draw() {
   camX = lerp(camX, targetX, camLerp);
   camY = lerp(camY, targetY, camLerp);
 
+  let breathe = sin(frameCount * 0.01) * 10;
+  camY += breathe;
+
   level.drawBackground();
 
   push();
