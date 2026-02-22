@@ -36,7 +36,7 @@ function setup() {
 
   level = new WorldLevel(worldData);
 
-  const start = worldData.playerStart ?? { x: 300, y: 300, speed: 3 };
+  const start = worldData.playerStart ?? { x: 300, y: 300, speed: 2 };
   player = new Player(start.x, start.y, start.speed);
 
   camX = player.x - width / 2;
@@ -74,6 +74,20 @@ function draw() {
   pop();
 
   level.drawHUD(player, camX, camY);
+}
+
+for (let s of level.symbols) {
+  if (!s.discovered) {
+    const visible =
+      s.x > camX &&
+      s.x < camX + width &&
+      s.y > camY &&
+      s.y < camY + height;
+
+    if (visible) {
+      s.discovered = true;
+    }
+  }
 }
 
 function keyPressed() {
