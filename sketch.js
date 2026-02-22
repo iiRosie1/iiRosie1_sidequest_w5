@@ -46,9 +46,21 @@ function setup() {
 function draw() {
   player.updateInput();
 
-  // Keep player inside world
   player.x = constrain(player.x, 0, level.w);
   player.y = constrain(player.y, 0, level.h);
+
+  // 🌟 Touch detection here
+  for (let s of level.symbols) {
+    if (!s.discovered) {
+      let d = dist(player.x, player.y, s.x, s.y);
+
+      if (d < 20) {
+        s.discovered = true;
+        player.triggerSparkle();
+      }
+    }
+  }
+
 
   // Target camera (center on player)
   let targetX = player.x - width / 2;
@@ -77,21 +89,10 @@ function draw() {
   pop();
 
   level.drawHUD(player, camX, camY);
-}
+} 
 
-for (let s of level.symbols) {
-  if (!s.discovered) {
-    const visible =
-      s.x > camX &&
-      s.x < camX + width &&
-      s.y > camY &&
-      s.y < camY + height;
 
-    if (visible) {
-      s.discovered = true;
-    }
-  }
-}
+
 
 function keyPressed() {
   if (key === "r" || key === "R") {
