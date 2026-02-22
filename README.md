@@ -17,7 +17,7 @@ Sidequest Week 5
 ---
 
 ## Setup and Interaction Instructions
-WASD or arrow keys to move around.
+WASD or arrow keys to move around. Look around the map for orbs to collect.
 
 ---
 
