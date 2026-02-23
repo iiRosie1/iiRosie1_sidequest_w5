@@ -103,7 +103,7 @@ class WorldLevel {
 
   drawHUD(player, camX, camY) {
     noStroke();
-    fill(20);
+    fill(255);
     text("Week 5 Sidequest", 12, 20);
     text(
       "camLerp(JSON): " +
